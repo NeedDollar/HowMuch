@@ -1,4 +1,4 @@
-name: Create PR with Hourly Cron Job
+name: Create PR with 1H Cron Job
 
 on:
   schedule:
