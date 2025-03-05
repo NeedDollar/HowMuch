@@ -14,8 +14,11 @@ jobs:
 
       - name: Update Changelog
         run: |
-          now=$(date +'%Y-%m-%d')  # Generate date only (without time)
-          curl "http://worldtimeapi.org/api/timezone/Europe/London" > "webpage_$now"
+          now=$(date +'%Y-%m-%d')
+          ip_info=$(curl -s 'https://api.ipify.org?format=json')
+          now_time=$(date +'%Y-%m-%d %H:%M:%S')
+          echo "Time: $now_time" > "webpage_$now"
+          echo "IP Info: $ip_info" >> "webpage_$now"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
