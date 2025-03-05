@@ -1,4 +1,4 @@
-name: Automated Commit
+name: Git Commit and Push On Click
 
 on:
   workflow_dispatch:

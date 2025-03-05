@@ -1,4 +1,4 @@
-name: On Click Workflow
+name: Hello World On Click
 
 on:
   workflow_dispatch:
