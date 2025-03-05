@@ -1,8 +1,8 @@
-name: Create PR with Cron Job 15 Minutes
+name: Create PR with Hourly Cron Job
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,4 +24,4 @@ jobs:
           title: Update Changelog
           body: Update changelog to reflect release changes
           branch: update-changelog
-          base: master
+          base: main
