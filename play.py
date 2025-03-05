@@ -1,49 +1,32 @@
-import asyncio
-from playwright.async_api import async_playwright
+import re
+from playwright.sync_api import Playwright, sync_playwright, expect
+from bs4 import BeautifulSoup
 import sys
-import tempfile
-import os
 
-#pip install playwright && playwright install
-
-async def get_page_html(url):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        try:
-            await page.goto(url)
-            html = await page.content()
-            return html
-        except Exception as e:
-            print(f"Error: {e}")
-            return None
-        finally:
-            await browser.close()
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <url>")
-        sys.exit(1)
-
-    url = sys.argv[1]
+def run(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=True)
+    context = browser.new_context()
+    page = context.new_page()
 
     try:
-        html_content = asyncio.run(get_page_html(url))
+        page.goto("https://www.tesco.com/groceries/en-GB/products/263204408")
+        page.wait_for_function("document.body.textContent.includes('Lowicz')", timeout=10000)
 
-        if html_content:
-            with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as temp_file:
-                temp_file.write(html_content)
-                temp_filename = temp_file.name
+        html_content = page.content()
 
-            try:
-                with open(temp_filename, 'r', encoding='utf-8') as f:
-                    print(f.read())
-            finally:
-                os.unlink(temp_filename)
+        # Write HTML content to file with UTF-8 encoding
+        with open("tesco_product.html", "w", encoding="utf-8") as f:
+            f.write(html_content)
 
-        else:
-            sys.exit(1)
+        print("HTML content saved to tesco_product.html") #confirmation that the script ran correctly.
 
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        sys.exit(1)
+        print(f"Error: {e}", file=sys.stderr)
+        print("Page or context closed unexpectedly.", file=sys.stderr)
+        sys.exit(1) #exit with error code.
+    finally:
+        context.close()
+        browser.close()
+
+with sync_playwright() as playwright:
+    run(playwright)
